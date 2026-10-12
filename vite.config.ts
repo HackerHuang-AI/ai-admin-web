@@ -1,12 +1,11 @@
-import { defineConfig } from 'vite';
+import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
-import { resolve } from 'path';
+import {resolve} from 'path';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
-import { viteMockServe } from 'vite-plugin-mock';
+import {ElementPlusResolver} from 'unplugin-vue-components/resolvers';
 
-export default defineConfig(({ command }) => ({
+export default defineConfig({
   plugins: [
     vue(),
     // Element Plus 自动按需引入
@@ -19,11 +18,6 @@ export default defineConfig(({ command }) => ({
       resolvers: [ElementPlusResolver()],
       dts: 'src/types/components.d.ts',
     }),
-    // Mock 服务，仅开发环境启用
-    viteMockServe({
-      mockPath: 'src/mock',
-      enable: command === 'serve',
-    }),
   ],
   resolve: {
     alias: {
@@ -33,5 +27,11 @@ export default defineConfig(({ command }) => ({
   server: {
     port: 3000,
     open: true,
+    proxy: {
+      '/ai-base': {
+        target: 'http://127.0.0.1:8888',
+        changeOrigin: true,
+      },
+    },
   },
-}))
+})

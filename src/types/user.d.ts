@@ -1,13 +1,20 @@
 export interface UserInfo {
-  id: number
+  id: string
   username: string
-  avatar: string
+  avatar?: string
   roles: string[]
   permissions: string[]
 }
 
 export interface LoginParams {
-  username: string
+  account: string
   password: string
+}
+
+export interface LoginResult {
+  sessionToken: string
+  sessionId: string
+  userId: string
+  tenantId: string
 }
 

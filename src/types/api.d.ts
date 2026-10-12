@@ -1,6 +1,6 @@
 // 通用接口响应结构
 export interface ApiResponse<T = unknown> {
-  code: number
+  code: number | string
   message: string
   data: T
 }

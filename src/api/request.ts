@@ -1,7 +1,7 @@
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import type {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import axios from 'axios';
-import { ElMessage } from 'element-plus';
-import type { ApiResponse } from '@/types/api';
+import {ElMessage} from 'element-plus';
+import type {ApiResponse} from '@/types/api';
 
 const request: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -22,7 +22,7 @@ request.interceptors.request.use((config) => {
 request.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => {
     const { code, message, data } = response.data
-    if (code === 0) {
+    if (code === '00') {
       return data as any
     }
     ElMessage.error(message || '请求失败')
@@ -31,6 +31,7 @@ request.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
+      localStorage.removeItem('userInfo')
       window.location.href = '/login'
     } else {
       ElMessage.error(error.message || '网络错误')

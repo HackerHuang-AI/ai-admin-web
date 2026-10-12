@@ -1,11 +1,11 @@
-import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
-import { get, post } from '@/api/request';
-import type { LoginParams, UserInfo } from '@/types/user';
+import {defineStore} from 'pinia';
+import {computed, ref} from 'vue';
+import {post} from '@/api/request';
+import type {LoginParams, LoginResult, UserInfo} from '@/types/user';
 
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>(localStorage.getItem('token') ?? '')
-  const userInfo = ref<UserInfo | null>(null)
+  const userInfo = ref<UserInfo | null>(JSON.parse(localStorage.getItem('userInfo') ?? 'null'))
 
   const isLoggedIn = computed(() => !!token.value)
 
@@ -18,23 +18,29 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function login(params: LoginParams) {
-    const data = await post<{ token: string; userInfo: UserInfo }>('/api/auth/login', params)
-    token.value = data.token
-    userInfo.value = data.userInfo
-    localStorage.setItem('token', data.token)
-  }
-
-  async function fetchUserInfo() {
-    if (!token.value) return
-    userInfo.value = await get<UserInfo>('/api/auth/userinfo')
+    const data = await post<LoginResult>('/ai-base/api/access/login', {
+      loginType: 'ACCOUNT_PASSWORD',
+      ...params,
+      deviceId: 'local-login-device-0001',
+    })
+    token.value = data.sessionToken
+    userInfo.value = {
+      id: data.userId,
+      username: params.account,
+      roles: [],
+      permissions: [],
+    }
+    localStorage.setItem('token', data.sessionToken)
+    localStorage.setItem('userInfo', JSON.stringify(userInfo.value))
   }
 
   function logout() {
     token.value = ''
     userInfo.value = null
     localStorage.removeItem('token')
+    localStorage.removeItem('userInfo')
   }
 
-  return { token, userInfo, isLoggedIn, hasPermission, hasRole, login, fetchUserInfo, logout }
+  return { token, userInfo, isLoggedIn, hasPermission, hasRole, login, logout }
 })
 

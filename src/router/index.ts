@@ -1,7 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import { useUserStore } from '@/stores/user';
+import {createRouter, createWebHistory} from 'vue-router';
+import {useUserStore} from '@/stores/user';
 
-// 路由定义，meta.permission 为空表示无需权限
 const routes = [
   {
     path: '/login',
@@ -12,8 +11,14 @@ const routes = [
   {
     path: '/',
     component: () => import('@/components/layout/AppLayout.vue'),
-    redirect: '/dashboard',
+    redirect: '/personal-space',
     children: [
+      {
+        path: 'personal-space',
+        name: 'PersonalSpace',
+        component: () => import('@/views/personal-space/index.vue'),
+        meta: { title: '个人空间' },
+      },
       {
         path: 'dashboard',
         name: 'Dashboard',
@@ -23,15 +28,60 @@ const routes = [
       {
         path: 'analysis',
         name: 'Analysis',
-        component: () => import('@/views/analysis/index.vue'),
+        component: () => import('@/views/ai-analysis/index.vue'),
         meta: { title: 'PR 分析', icon: 'DataAnalysis', permission: 'analysis:view' },
+      },
+      {
+        path: 'agent',
+        name: 'Agent',
+        component: () => import('@/views/ai-agent/index.vue'),
+        meta: { title: 'Agent' },
+      },
+      {
+        path: 'knowledge-base',
+        name: 'KnowledgeBase',
+        component: () => import('@/views/ai-knowledge/index.vue'),
+        meta: { title: '知识库' },
+      },
+      {
+        path: 'tools',
+        name: 'Tools',
+        component: () => import('@/views/ai-mcp/index.vue'),
+        meta: { title: '工具' },
+      },
+      {
+        path: 'workflow',
+        name: 'Workflow',
+        component: () => import('@/views/ai-orchestration/index.vue'),
+        meta: { title: '工作流' },
+      },
+      {
+        path: 'memory-management',
+        name: 'MemoryManagement',
+        component: () => import('@/views/ai-memory/index.vue'),
+        meta: { title: '记忆管理' },
+      },
+      {
+        path: 'agent-evaluation',
+        name: 'AgentEvaluation',
+        component: () => import('@/views/ai-eval/index.vue'),
+        meta: { title: 'Agent 评测' },
+      },
+      {
+        path: 'experiment-management',
+        name: 'ExperimentManagement',
+        component: () => import('@/views/ai-experiment/index.vue'),
+        meta: { title: '实验管理' },
+      },
+      {
+        path: 'log-tracking',
+        name: 'LogTracking',
+        component: () => import('@/views/log-tracking/index.vue'),
+        meta: { title: '日志追踪' },
       },
     ],
   },
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: '/',
-  },
+  { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 
 const router = createRouter({
@@ -39,27 +89,13 @@ const router = createRouter({
   routes,
 })
 
-// 路由守卫：未登录跳登录页，无权限提示
 router.beforeEach(async (to) => {
   const userStore = useUserStore()
-
-  // 公开页面直接放行
   if (to.meta.public) return true
-
-  // 未登录跳登录页
   if (!userStore.token) return '/login'
 
-  // 有 token 但刷新后 userInfo 丢失，先补拉一次
-  if (!userStore.userInfo) {
-    await userStore.fetchUserInfo()
-  }
-
-  // 有权限要求时校验
   const permission = to.meta.permission as string | undefined
-  if (permission && !userStore.hasPermission(permission)) {
-    return '/dashboard'
-  }
-
+  if (permission && !userStore.hasPermission(permission)) return '/personal-space'
   return true
 })
 
