@@ -2,7 +2,9 @@
 export interface ApiResponse<T = unknown> {
   code: number | string
   message: string
-  data: T
+  errorCode?: string
+  data: T | null
+  errors?: { errorCode: string; message: string }[] | null
 }
 
 // 分页参数

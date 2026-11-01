@@ -1,7 +1,8 @@
-import type {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
+import type {AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import axios from 'axios';
 import {ElMessage} from 'element-plus';
 import type {ApiResponse} from '@/types/api';
+import i18n from '@/i18n';
 
 const request: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -11,6 +12,7 @@ const request: AxiosInstance = axios.create({
 
 // 请求拦截器：带上 token
 request.interceptors.request.use((config) => {
+  config.headers['Accept-Language'] = i18n.global.locale.value
   const token = localStorage.getItem('token')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
@@ -25,16 +27,20 @@ request.interceptors.response.use(
     if (code === '00') {
       return data as any
     }
-    ElMessage.error(message || '请求失败')
-    return Promise.reject(new Error(message))
+    const errorMessage = message || i18n.global.t('request.failed')
+    ElMessage.error(errorMessage)
+    return Promise.reject(new Error(errorMessage))
   },
-  (error) => {
+  (error: AxiosError<ApiResponse>) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
       localStorage.removeItem('userInfo')
       window.location.href = '/login'
     } else {
-      ElMessage.error(error.message || '网络错误')
+      const message = error.response?.data?.message
+      const fallbackKey = error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT'
+        ? 'request.timeout' : error.response ? 'request.failed' : 'request.networkError'
+      ElMessage.error(typeof message === 'string' && message ? message : i18n.global.t(fallbackKey))
     }
     return Promise.reject(error)
   }

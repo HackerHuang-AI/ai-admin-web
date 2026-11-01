@@ -3,16 +3,16 @@
     <header class="page-header">
       <div class="brand">
         <span class="brand-mark"><i></i><i></i><i></i></span>
-        <span>企业智库中心</span>
+        <span>{{ t('login.brand') }}</span>
       </div>
-      <span class="header-hint">ENTERPRISE KNOWLEDGE CENTER</span>
+      <span class="header-hint">{{ t('login.headerHint') }}</span>
     </header>
 
     <main class="login-layout">
       <section class="intro-panel">
         <div class="intro-content">
-          <p class="eyebrow">ENTERPRISE INTELLIGENCE</p>
-          <h1>汇聚知识，驱动<br />企业智慧决策</h1>
+          <p class="eyebrow">{{ t('login.eyebrow') }}</p>
+          <h1>{{ t('login.headlineFirst') }}<br />{{ t('login.headlineSecond') }}</h1>
         </div>
 
         <div class="knowledge-network" aria-hidden="true">
@@ -25,28 +25,28 @@
           <span class="network-dot dot-right"></span>
           <span class="network-dot dot-bottom"></span>
           <span class="network-core">AI</span>
-          <span class="network-node node-book"><i></i><b>知识库</b></span>
-          <span class="network-node node-agent"><i></i><b>智能体</b></span>
-          <span class="network-node node-data"><i></i><b>数据</b></span>
-          <span class="network-node node-tool"><i></i><b>工具</b></span>
+          <span class="network-node node-book"><i></i><b>{{ t('login.nodes.knowledge') }}</b></span>
+          <span class="network-node node-agent"><i></i><b>{{ t('login.nodes.agent') }}</b></span>
+          <span class="network-node node-data"><i></i><b>{{ t('login.nodes.data') }}</b></span>
+          <span class="network-node node-tool"><i></i><b>{{ t('login.nodes.tool') }}</b></span>
         </div>
 
-        <div class="feature-list" aria-label="平台能力">
-          <div><span>⌁</span><b>知识沉淀</b><small>统一管理企业内容</small></div>
-          <div><span>◌</span><b>智能检索</b><small>快速获取所需信息</small></div>
-          <div><span>✦</span><b>协作共享</b><small>连接团队与经验</small></div>
-          <div><span>⌘</span><b>安全可信</b><small>守护企业数据</small></div>
+        <div class="feature-list" :aria-label="t('login.features.label')">
+          <div><span>⌁</span><b>{{ t('login.features.knowledge') }}</b><small>{{ t('login.features.knowledgeDescription') }}</small></div>
+          <div><span>◌</span><b>{{ t('login.features.search') }}</b><small>{{ t('login.features.searchDescription') }}</small></div>
+          <div><span>✦</span><b>{{ t('login.features.collaboration') }}</b><small>{{ t('login.features.collaborationDescription') }}</small></div>
+          <div><span>⌘</span><b>{{ t('login.features.security') }}</b><small>{{ t('login.features.securityDescription') }}</small></div>
         </div>
       </section>
 
       <section class="form-panel">
         <div class="form-content">
           <div class="login-heading">
-            <h2>欢迎登录</h2>
-            <p>连接企业知识，开启智能协作</p>
+            <h2>{{ t('login.heading') }}</h2>
+            <p>{{ t('login.description') }}</p>
           </div>
 
-          <div class="login-tabs" role="tablist" aria-label="登录方式">
+          <div class="login-tabs" role="tablist" :aria-label="t('login.methods.label')">
             <button
               v-for="item in loginMethods"
               :key="item.value"
@@ -56,7 +56,7 @@
               :aria-selected="activeMethod === item.value"
               @click="activeMethod = item.value"
             >
-              {{ item.label }}
+              {{ t(item.labelKey) }}
             </button>
           </div>
 
@@ -69,52 +69,52 @@
             @keyup.enter="handleLogin"
           >
             <el-form-item prop="account">
-              <el-input v-model="form.account" placeholder="请输入账号" :prefix-icon="User" />
+              <el-input v-model="form.account" :placeholder="t('login.accountPlaceholder')" :prefix-icon="User" />
             </el-form-item>
             <el-form-item prop="password">
               <el-input
                 v-model="form.password"
                 type="password"
-                placeholder="请输入密码"
+                :placeholder="t('login.passwordPlaceholder')"
                 :prefix-icon="Lock"
                 show-password
               />
             </el-form-item>
-            <el-button type="primary" :loading="loading" class="login-button" @click="handleLogin">登录</el-button>
+            <el-button type="primary" :loading="loading" class="login-button" @click="handleLogin">{{ t('login.submit') }}</el-button>
           </el-form>
 
           <div v-else-if="activeMethod === 'qrcode'" class="qrcode-login">
-            <div class="qrcode" :key="qrVersion" aria-label="模拟登录二维码"></div>
-            <p class="qrcode-title">请使用企业应用扫码登录</p>
-            <button class="text-button" type="button" @click="refreshQrcode">刷新二维码</button>
+            <div class="qrcode" :key="qrVersion" :aria-label="t('login.qrcodeLabel')"></div>
+            <p class="qrcode-title">{{ t('login.qrcodeInstruction') }}</p>
+            <button class="text-button" type="button" @click="refreshQrcode">{{ t('login.refreshQrcode') }}</button>
           </div>
 
           <div v-else-if="activeMethod === 'sms'" class="coming-soon">
-            <div class="method-symbol">短信</div>
-            <h3>短信验证码登录</h3>
-            <p>该登录方式正在接入认证服务，敬请期待。</p>
-            <el-button plain class="secondary-button" @click="showPendingMessage('短信验证码登录')">发送验证码</el-button>
+            <div class="method-symbol">{{ t('login.smsSymbol') }}</div>
+            <h3>{{ t('login.smsHeading') }}</h3>
+            <p>{{ t('login.smsDescription') }}</p>
+            <el-button plain class="secondary-button" @click="showPendingMessage(t('login.smsHeading'))">{{ t('login.sendSmsCode') }}</el-button>
           </div>
 
           <div v-else class="coming-soon">
             <div class="method-symbol">SSO</div>
-            <h3>单点登录</h3>
-            <p>使用企业统一身份认证，一键安全登录平台。</p>
-            <el-button plain class="secondary-button" @click="showPendingMessage('SSO 登录')">企业 SSO 登录</el-button>
+            <h3>{{ t('login.ssoHeading') }}</h3>
+            <p>{{ t('login.ssoDescription') }}</p>
+            <el-button plain class="secondary-button" @click="showPendingMessage(t('login.methods.sso'))">{{ t('login.ssoSubmit') }}</el-button>
           </div>
 
-          <p class="login-tip">登录即代表你已阅读并同意平台使用规范</p>
+          <p class="login-tip">{{ t('login.terms') }}</p>
         </div>
       </section>
     </main>
 
-    <footer>© 2026 企业智库中心</footer>
+    <footer>{{ t('login.copyright', { year: 2026 }) }}</footer>
   </div>
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from 'vue'
-import {useRouter} from 'vue-router'
+import {computed, reactive, ref} from 'vue'
+import {useI18n} from 'vue-i18n'
 import type {FormInstance} from 'element-plus'
 import {ElMessage} from 'element-plus'
 import {Lock, User} from '@element-plus/icons-vue'
@@ -122,14 +122,15 @@ import {useUserStore} from '@/stores/user'
 
 type LoginMethod = 'password' | 'qrcode' | 'sms' | 'sso'
 
-const loginMethods: { label: string; value: LoginMethod }[] = [
-  { label: '密码登录', value: 'password' },
-  { label: '扫码登录', value: 'qrcode' },
-  { label: '短信登录', value: 'sms' },
-  { label: 'SSO 登录', value: 'sso' },
+const {t} = useI18n({ useScope: 'global' })
+
+const loginMethods: { labelKey: string; value: LoginMethod }[] = [
+  { labelKey: 'login.methods.password', value: 'password' },
+  { labelKey: 'login.methods.qrcode', value: 'qrcode' },
+  { labelKey: 'login.methods.sms', value: 'sms' },
+  { labelKey: 'login.methods.sso', value: 'sso' },
 ]
 
-const router = useRouter()
 const userStore = useUserStore()
 const formRef = ref<FormInstance>()
 const activeMethod = ref<LoginMethod>('password')
@@ -137,18 +138,18 @@ const qrVersion = ref(0)
 const loading = ref(false)
 const form = reactive({ account: '', password: '' })
 
-const rules = {
-  account: [{ required: true, message: '请输入账号', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-}
+const rules = computed(() => ({
+  account: [{ required: true, message: t('login.accountPlaceholder'), trigger: 'blur' }],
+  password: [{ required: true, message: t('login.passwordPlaceholder'), trigger: 'blur' }],
+}))
 
 function refreshQrcode() {
   qrVersion.value += 1
-  ElMessage.success('二维码已刷新')
+  ElMessage.success(t('login.qrcodeRefreshed'))
 }
 
 function showPendingMessage(method: string) {
-  ElMessage.info(`${method}即将接入`)
+  ElMessage.info(t('login.pending', { method }))
 }
 
 async function handleLogin() {
@@ -157,8 +158,7 @@ async function handleLogin() {
   loading.value = true
   try {
     await userStore.login(form)
-    ElMessage.success('登录成功')
-    router.push('/')
+    ElMessage.success(t('login.success'))
   } finally {
     loading.value = false
   }
